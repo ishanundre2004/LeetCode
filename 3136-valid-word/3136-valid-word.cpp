@@ -11,7 +11,8 @@ public:
             if (!isalnum(it))
                 return false;
             if (isalpha(it)) {
-                if (vowels.find(tolower(it)) != vowels.end())
+                char ch = tolower(it);
+                if (ch == 'a' || ch == 'e'|| ch == 'i'|| ch == 'o' || ch == 'u')
                     isVowel = true;
                 else
                     isConsonant = true;
