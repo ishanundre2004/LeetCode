@@ -4,32 +4,20 @@ public:
         int n = word.length();
         if (n < 3)
             return false;
-        int vowels_count = 0, consonants_count = 0;
-        std::unordered_set<char> vowels = {'A', 'E', 'I', 'O', 'U',
-                                           'a', 'e', 'i', 'o', 'u'};
+        bool isVowel = false, isConsonant = false;
+        unordered_set<char> vowels = {'a', 'e', 'i', 'o', 'u'};
 
-        unordered_set<char> consonants;
-        for (char c = 'A'; c <= 'Z'; ++c) {
-            if (vowels.find(c) == vowels.end()) {
-                consonants.insert(c);
+        for (auto& it : word) {
+            if (!isalnum(it))
+                return false;
+            if (isalpha(it)) {
+                if (vowels.find(tolower(it)) != vowels.end())
+                    isVowel = true;
+                else
+                    isConsonant = true;
             }
         }
-        for (char c = 'a'; c <= 'z'; ++c) {
-            if (vowels.find(c) == vowels.end()) {
-                consonants.insert(c);
-            }
-        }
-        unordered_set<char> specialChars = {
-            '!',  '@', '#', '$', '%', '^', '&', '*',  '(', ')', '-',
-            '_',  '=', '+', '[', ']', '{', '}', '\\', '|', ';', ':',
-            '\'', '"', ',', '<', '.', '>', '/', '?',  '`', '~'};
 
-        for(auto& it : word){
-            if(vowels.find(it) != vowels.end()) vowels_count++;
-            if(consonants.find(it) != consonants.end()) consonants_count++;
-            if(specialChars.find(it) != specialChars.end()) return false;
-        }
-
-        return (vowels_count == 0 || consonants_count == 0) ? false : true;
+        return isVowel && isConsonant;
     }
 };
