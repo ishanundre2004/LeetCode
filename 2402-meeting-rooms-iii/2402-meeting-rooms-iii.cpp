@@ -1,32 +1,51 @@
 class Solution {
 public:
     int mostBooked(int n, vector<vector<int>>& meetings) {
-        sort(meetings.begin(), meetings.end(), [](auto &a, auto &b){ return a[0] < b[0]; });
-        priority_queue<int, vector<int>, greater<int>> avail;
-        for (int i = 0; i < n; ++i) avail.push(i);
-        priority_queue<pair<long long,int>, vector<pair<long long,int>>, greater<>> busy;
-        vector<int> cnt(n);
-        for (auto &m : meetings) {
-            long long s = m[0], e = m[1];
-            while (!busy.empty() && busy.top().first <= s) {
-                avail.push(busy.top().second);
+        sort(meetings.begin(), meetings.end());
+
+        priority_queue<int, vector<int>, greater<int>> available;
+        for (int i = 0; i < n; i++) {
+            available.push(i);
+        }
+
+        priority_queue<
+            pair<long long, int>,
+            vector<pair<long long, int>>,
+            greater<pair<long long, int>>> busy;
+
+        vector<int> count(n, 0);
+
+        for (auto& meeting : meetings) {
+            long long start = meeting[0];
+            long long end = meeting[1];
+            long long duration = end - start;
+
+            while (!busy.empty() && busy.top().first <= start) {
+                available.push(busy.top().second);
                 busy.pop();
             }
-            long long start;
-            int r, dur = e - s;
-            if (!avail.empty()) {
-                r = avail.top(); avail.pop();
-                start = s;
+
+            if (!available.empty()) {
+                int room = available.top();
+                available.pop();
+                busy.push({end, room});
+                count[room]++;
             } else {
-                auto p = busy.top(); busy.pop();
-                start = p.first; r = p.second;
+
+                auto [finishTime, room] = busy.top();
+                busy.pop();
+                busy.push({finishTime + duration, room});
+                count[room]++;
             }
-            busy.emplace(start + dur, r);
-            ++cnt[r];
         }
-        int best = 0;
-        for (int i = 1; i < n; ++i)
-            if (cnt[i] > cnt[best]) best = i;
-        return best;
+
+        int ans = 0;
+        for (int i = 1; i < n; i++) {
+            if (count[i] > count[ans]) {
+                ans = i;
+            }
+        }
+
+        return ans;
     }
 };
